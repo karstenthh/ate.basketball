@@ -3,45 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Basketball Tournament - Volume Manager</title>
+<title>Basketball Scoreboard</title>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial;
     background: black;
     color: white;
-    min-height: 100vh;
     padding: 15px;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: auto;
-}
-
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.section {
-    background: rgba(255,255,255,0.1);
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
 }
 
 .match-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(0,0,0,0.3);
+    background: #111;
     padding: 20px;
     border-radius: 15px;
 }
@@ -50,17 +31,13 @@ h1 {
     text-align: center;
 }
 
-.scoreboard .team-name {
-    font-size: 1.2em;
-}
-
-.scoreboard div:last-child {
+.score {
     font-size: 3em;
     font-weight: bold;
 }
 
 .timer {
-    font-size: 2.5em;
+    font-size: 2em;
     color: gold;
 }
 
@@ -75,57 +52,36 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background: rgba(255,255,255,0.1);
-    padding: 15px;
-    border-radius: 15px;
-}
-
-.match-controls {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    justify-content: center;
 }
 
 button {
-    padding: 12px;
+    padding: 14px;
     font-size: 1.2em;
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+    background: linear-gradient(45deg,#ff6b6b,#ffd93d);
     color: white;
-    font-weight: bold;
 }
 
-.minus {
-    background: #ff4d4d;
-}
-
-input {
-    padding: 10px;
-    font-size: 1.1em;
-    border-radius: 10px;
-    border: none;
-    text-align: center;
+.undo {
+    background: #888;
 }
 
 /* MOBILE */
-@media (max-width: 768px) {
-    .match-container {
-        flex-direction: column;
-        gap: 10px;
-    }
-
+@media (max-width:768px){
     .controls {
         flex-direction: column;
     }
 
     button {
         width: 100%;
-        padding: 15px;
         font-size: 1.3em;
+    }
+
+    .match-container {
+        flex-direction: column;
+        gap: 10px;
     }
 }
 </style>
@@ -134,99 +90,78 @@ input {
 <body>
 
 <div class="container">
-<h1>🏀 Basketball Volume Tournament</h1>
 
-<div class="section">
-    <div class="match-container">
-        <div class="scoreboard">
-            <div id="team1Name">Team 1</div>
-            <div id="team1Score">0</div>
-        </div>
-
-        <div class="timer" id="timer">12:00</div>
-
-        <div class="scoreboard">
-            <div id="team2Name">Team 2</div>
-            <div id="team2Score">0</div>
-        </div>
+<div class="match-container">
+    <div class="scoreboard">
+        <div>Team 1</div>
+        <div id="team1Score" class="score">0</div>
     </div>
 
-    <!-- CONTROLS -->
-    <div class="controls">
+    <div id="timer" class="timer">12:00</div>
 
-        <!-- TEAM 1 -->
-        <div class="team-controls">
-            <h3>Team 1</h3>
-            <button onclick="addPoint(1,1)">+1</button>
-            <button onclick="addPoint(1,2)">+2</button>
-            <button onclick="addPoint(1,3)">+3</button>
-            <button class="minus" onclick="addPoint(1,-1)">-1</button>
-        </div>
-
-        <!-- TEAM 2 -->
-        <div class="team-controls">
-            <h3>Team 2</h3>
-            <button onclick="addPoint(2,1)">+1</button>
-            <button onclick="addPoint(2,2)">+2</button>
-            <button onclick="addPoint(2,3)">+3</button>
-            <button class="minus" onclick="addPoint(2,-1)">-1</button>
-        </div>
-
-        <!-- MATCH CONTROL -->
-        <div class="match-controls">
-            <input type="number" id="matchTime" value="12" min="1" max="30">
-            <button onclick="setTimer()">Set Timer</button>
-            <button onclick="endMatch()">End Match</button>
-        </div>
-
+    <div class="scoreboard">
+        <div>Team 2</div>
+        <div id="team2Score" class="score">0</div>
     </div>
 </div>
+
+<div class="controls">
+
+    <!-- TEAM 1 -->
+    <div class="team-controls">
+        <h3>Team 1</h3>
+        <button onclick="addPoint(1,1)">+1</button>
+        <button onclick="addPoint(1,2)">+2</button>
+        <button onclick="addPoint(1,3)">+3</button>
+        <button class="undo" onclick="undo(1)">UNDO</button>
+    </div>
+
+    <!-- TEAM 2 -->
+    <div class="team-controls">
+        <h3>Team 2</h3>
+        <button onclick="addPoint(2,1)">+1</button>
+        <button onclick="addPoint(2,2)">+2</button>
+        <button onclick="addPoint(2,3)">+3</button>
+        <button class="undo" onclick="undo(2)">UNDO</button>
+    </div>
+
+</div>
+
 </div>
 
 <script>
 let scores = { team1: 0, team2: 0 };
-let timeLeft = 12 * 60;
-let timerInterval = null;
 
-/* TIMER */
-function setTimer() {
-    const minutes = parseInt(document.getElementById('matchTime').value);
-    timeLeft = minutes * 60;
-    updateTimerDisplay();
+// store last actions separately per team
+let history = {
+    team1: [],
+    team2: []
+};
 
-    if (timerInterval) clearInterval(timerInterval);
-
-    timerInterval = setInterval(() => {
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            return;
-        }
-        timeLeft--;
-        updateTimerDisplay();
-    }, 1000);
-}
-
-function updateTimerDisplay() {
-    const m = Math.floor(timeLeft / 60);
-    const s = timeLeft % 60;
-    document.getElementById('timer').textContent =
-        `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-/* SCORE */
-function addPoint(team, point) {
+function addPoint(team, pts) {
     if (team === 1) {
-        scores.team1 = Math.max(0, scores.team1 + point);
+        scores.team1 += pts;
+        history.team1.push(pts);
         document.getElementById('team1Score').textContent = scores.team1;
     } else {
-        scores.team2 = Math.max(0, scores.team2 + point);
+        scores.team2 += pts;
+        history.team2.push(pts);
         document.getElementById('team2Score').textContent = scores.team2;
     }
 }
 
-/* END MATCH */
-function endMatch() {
-    alert(`Final Score\nTeam 1: ${scores.team1}\nTeam 2: ${scores.team2}`);
+function undo(team) {
+    if (team === 1 && history.team1.length > 0) {
+        const last = history.team1.pop();
+        scores.team1 -= last;
+        document.getElementById('team1Score').textContent = scores.team1;
+    }
+
+    if (team === 2 && history.team2.length > 0) {
+        const last = history.team2.pop();
+        scores.team2 -= last;
+        document.getElementById('team2Score').textContent = scores.team2;
+    }
 }
 </script>
 
