@@ -3,35 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scoreboard Tournament App</title>
+<title>Scoreboard App</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #111;
-  color: white;
-  overflow: hidden;
+:root {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --accent: #6366f1;
+  --accent2: #22c55e;
+  --danger: #ef4444;
+  --text: #f1f5f9;
 }
 
-#app {
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* PAGES */
+.page {
+  display: none;
   height: 100vh;
+  padding: 20px;
+}
+
+.active {
+  display: block;
+}
+
+/* LANDING */
+.center {
   display: flex;
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
 }
 
-/* TOP BAR */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  background: #222;
+button {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 16px;
+  background: var(--accent);
+  color: white;
+  margin: 5px;
 }
 
-/* MAIN SCOREBOARD */
+/* TEAM INPUT */
+input {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 8px;
+  border: none;
+  width: 200px;
+}
+
+/* SCOREBOARD */
 .scoreboard {
-  flex: 1;
   display: flex;
+  height: 80vh;
 }
 
 .team {
@@ -44,60 +76,41 @@ body {
 
 .team-name {
   text-align: center;
-  font-size: 3vw;
+  font-size: 2rem;
 }
 
 .score {
+  font-size: 18vw;
   text-align: center;
-  font-size: 20vw;
 }
 
 .controls {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
-button {
-  font-size: 4vw;
+.controls button {
+  font-size: 20px;
   margin: 5px;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
 }
 
-.add { background: #2ecc71; }
-.sub { background: #e74c3c; }
-.undo { background: #f1c40f; }
-
-.bottom-bar {
-  display: flex;
-  justify-content: space-around;
-  padding: 10px;
-  background: #222;
+.timer {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 10px;
 }
 
-/* LEADERBOARD */
-#leaderboard {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #000;
-  display: none;
-  flex-direction: column;
-}
-
+/* leaderboard */
 table {
   width: 100%;
-  text-align: center;
   border-collapse: collapse;
 }
 
 td, th {
+  border: 1px solid #334155;
   padding: 10px;
-  border: 1px solid #444;
+  text-align: center;
 }
 
 .gold {
@@ -109,211 +122,197 @@ td, th {
 
 <body>
 
-<div id="app">
+<!-- LANDING -->
+<div id="landing" class="page active center">
+  <h1>🏀 Scoreboard App</h1>
+  <button onclick="goTo('setup')">Start Tournament</button>
+</div>
 
-  <div class="topbar">
-    <div id="matchInfo">Match 1</div>
-    <button onclick="showLeaderboard()">Leaderboard</button>
-  </div>
+<!-- SETUP -->
+<div id="setup" class="page center">
+  <h2>Enter Teams</h2>
+  <div id="teamInputs"></div>
+  <button onclick="addTeamInput()">+ Add Team</button>
+  <button onclick="startTournament()">Start</button>
+</div>
+
+<!-- SCOREBOARD -->
+<div id="scoreboard" class="page">
+
+  <div class="timer" id="timer">10:00</div>
 
   <div class="scoreboard">
-    
     <div class="team">
-      <div class="team-name" id="team1Name">Team A</div>
+      <div class="team-name" id="team1Name"></div>
       <div class="score" id="team1Score">0</div>
       <div class="controls">
-        <button class="add" onclick="addScore(1,1)">+1</button>
-        <button class="add" onclick="addScore(1,2)">+2</button>
-        <button class="add" onclick="addScore(1,3)">+3</button>
-        <button class="sub" onclick="minusScore(1)">-1</button>
-        <button class="undo" onclick="undoScore(1)">UNDO</button>
+        <button onclick="addScore(1,1)">+1</button>
+        <button onclick="addScore(1,2)">+2</button>
+        <button onclick="addScore(1,3)">+3</button>
+        <button onclick="undoScore(1)">Undo</button>
       </div>
     </div>
 
     <div class="team">
-      <div class="team-name" id="team2Name">Team B</div>
+      <div class="team-name" id="team2Name"></div>
       <div class="score" id="team2Score">0</div>
       <div class="controls">
-        <button class="add" onclick="addScore(2,1)">+1</button>
-        <button class="add" onclick="addScore(2,2)">+2</button>
-        <button class="add" onclick="addScore(2,3)">+3</button>
-        <button class="sub" onclick="minusScore(2)">-1</button>
-        <button class="undo" onclick="undoScore(2)">UNDO</button>
+        <button onclick="addScore(2,1)">+1</button>
+        <button onclick="addScore(2,2)">+2</button>
+        <button onclick="addScore(2,3)">+3</button>
+        <button onclick="undoScore(2)">Undo</button>
       </div>
     </div>
-
   </div>
 
-  <div class="bottom-bar">
-    <button onclick="startMatch()">Start</button>
+  <div style="text-align:center;">
+    <button onclick="startTimer()">Start Timer</button>
+    <button onclick="pauseTimer()">Pause</button>
     <button onclick="endMatch()">End Match</button>
-    <button onclick="nextMatch()">Next Match</button>
+    <button onclick="showLeaderboard()">Leaderboard</button>
   </div>
 
 </div>
 
 <!-- LEADERBOARD -->
-<div id="leaderboard">
-  <h2 style="text-align:center;">Leaderboard</h2>
+<div id="leaderboard" class="page">
+  <h2>Leaderboard</h2>
   <table id="leaderboardTable"></table>
-  <button onclick="hideLeaderboard()">Close</button>
+  <button onclick="goTo('scoreboard')">Back</button>
 </div>
 
 <script>
-let teams = [
-  { name: "Team A", wins: 0, points: 0 },
-  { name: "Team B", wins: 0, points: 0 },
-  { name: "Team C", wins: 0, points: 0 },
-  { name: "Team D", wins: 0, points: 0 }
-];
-
-let matches = [
-  [0,1],
-  [2,3],
-  [0,2],
-  [1,3],
-  [0,3],
-  [1,2]
-];
-
+let teams = [];
+let matches = [];
 let currentMatch = 0;
 
-let scores = { team1: 0, team2: 0 };
-let history = { team1: [], team2: [] };
-let matchState = "not_started";
+let scores = {team1:0, team2:0};
+let history = {team1:[], team2:[]};
 
-/* SCORE FUNCTIONS */
-function addScore(team, val) {
-  if (matchState !== "ongoing") return;
-
-  navigator.vibrate(30);
-
-  if (team === 1) {
-    scores.team1 += val;
-    history.team1.push(val);
-  } else {
-    scores.team2 += val;
-    history.team2.push(val);
-  }
-  updateUI();
+/* NAVIGATION */
+function goTo(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
 }
 
-function minusScore(team) {
-  if (matchState !== "ongoing") return;
-
-  if (team === 1 && scores.team1 > 0) {
-    scores.team1 -= 1;
-  } else if (team === 2 && scores.team2 > 0) {
-    scores.team2 -= 1;
-  }
-  updateUI();
+/* SETUP */
+function addTeamInput(){
+  let input = document.createElement("input");
+  input.placeholder = "Team name";
+  document.getElementById("teamInputs").appendChild(input);
 }
 
-function undoScore(team) {
-  if (matchState !== "ongoing") return;
+addTeamInput();
+addTeamInput();
 
-  let last;
-  if (team === 1) {
-    last = history.team1.pop();
-    if (last) scores.team1 -= last;
-  } else {
-    last = history.team2.pop();
-    if (last) scores.team2 -= last;
-  }
-  updateUI();
-}
+function startTournament(){
+  let inputs = document.querySelectorAll("#teamInputs input");
+  teams = Array.from(inputs).map(i=>({
+    name: i.value || "Team",
+    wins: 0,
+    points: 0
+  }));
 
-/* MATCH CONTROL */
-function startMatch() {
-  matchState = "ongoing";
-}
-
-function endMatch() {
-  matchState = "finished";
-
-  let [t1, t2] = matches[currentMatch];
-
-  teams[t1].points += scores.team1;
-  teams[t2].points += scores.team2;
-
-  if (scores.team1 > scores.team2) teams[t1].wins++;
-  else if (scores.team2 > scores.team1) teams[t2].wins++;
-
-  saveData();
-}
-
-function nextMatch() {
-  currentMatch++;
-  if (currentMatch >= matches.length) {
-    alert("Tournament Finished!");
-    return;
-  }
-
-  resetScore();
+  generateMatches();
   loadMatch();
+  goTo('scoreboard');
 }
 
-function resetScore() {
-  scores = { team1: 0, team2: 0 };
-  history = { team1: [], team2: [] };
-  matchState = "not_started";
+/* ROUND ROBIN */
+function generateMatches(){
+  matches = [];
+  for(let i=0;i<teams.length;i++){
+    for(let j=i+1;j<teams.length;j++){
+      matches.push([i,j]);
+    }
+  }
+}
+
+/* MATCH */
+function loadMatch(){
+  let [a,b]=matches[currentMatch];
+  document.getElementById("team1Name").innerText=teams[a].name;
+  document.getElementById("team2Name").innerText=teams[b].name;
+  scores={team1:0,team2:0};
+  history={team1:[],team2:[]};
   updateUI();
 }
 
-function loadMatch() {
-  let [t1, t2] = matches[currentMatch];
-
-  document.getElementById("team1Name").innerText = teams[t1].name;
-  document.getElementById("team2Name").innerText = teams[t2].name;
-  document.getElementById("matchInfo").innerText = "Match " + (currentMatch+1);
+/* SCORE */
+function addScore(t,v){
+  scores["team"+t]+=v;
+  history["team"+t].push(v);
+  updateUI();
 }
 
-/* UI */
-function updateUI() {
-  document.getElementById("team1Score").innerText = scores.team1;
-  document.getElementById("team2Score").innerText = scores.team2;
+function undoScore(t){
+  let last=history["team"+t].pop();
+  if(last) scores["team"+t]-=last;
+  updateUI();
+}
+
+function updateUI(){
+  team1Score.innerText=scores.team1;
+  team2Score.innerText=scores.team2;
+}
+
+/* TIMER */
+let time=600;
+let interval;
+
+function updateTimer(){
+  let m=Math.floor(time/60);
+  let s=time%60;
+  timer.innerText=`${m}:${s.toString().padStart(2,'0')}`;
+}
+
+function startTimer(){
+  interval=setInterval(()=>{
+    if(time>0){time--;updateTimer();}
+  },1000);
+}
+
+function pauseTimer(){
+  clearInterval(interval);
+}
+
+/* END MATCH */
+function endMatch(){
+  let [a,b]=matches[currentMatch];
+
+  teams[a].points+=scores.team1;
+  teams[b].points+=scores.team2;
+
+  if(scores.team1>scores.team2) teams[a].wins++;
+  else if(scores.team2>scores.team1) teams[b].wins++;
+
+  currentMatch++;
+  if(currentMatch>=matches.length){
+    alert("Tournament Finished");
+  } else {
+    loadMatch();
+  }
 }
 
 /* LEADERBOARD */
-function showLeaderboard() {
-  let sorted = [...teams].sort((a,b)=>{
-    if (b.wins !== a.wins) return b.wins - a.wins;
-    return b.points - a.points;
+function showLeaderboard(){
+  let sorted=[...teams].sort((a,b)=>{
+    if(b.wins!==a.wins) return b.wins-a.wins;
+    return b.points-a.points;
   });
 
-  let html = "<tr><th>Team</th><th>Wins</th><th>Points</th></tr>";
-
+  let html="<tr><th>Team</th><th>Wins</th><th>Points</th></tr>";
   sorted.forEach((t,i)=>{
-    html += `<tr class="${i===0 ? 'gold':''}">
+    html+=`<tr class="${i===0?'gold':''}">
       <td>${t.name}</td>
       <td>${t.wins}</td>
       <td>${t.points}</td>
     </tr>`;
   });
 
-  document.getElementById("leaderboardTable").innerHTML = html;
-  document.getElementById("leaderboard").style.display = "flex";
+  leaderboardTable.innerHTML=html;
+  goTo('leaderboard');
 }
-
-function hideLeaderboard() {
-  document.getElementById("leaderboard").style.display = "none";
-}
-
-/* STORAGE */
-function saveData() {
-  localStorage.setItem("teams", JSON.stringify(teams));
-}
-
-function loadData() {
-  let data = localStorage.getItem("teams");
-  if (data) teams = JSON.parse(data);
-}
-
-/* INIT */
-loadData();
-loadMatch();
-updateUI();
-
 </script>
 
 </body>
