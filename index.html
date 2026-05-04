@@ -34,7 +34,6 @@
             color: white;
             text-align: center;
             padding: 20px;
-            position: relative;
         }
 
         .header h1 {
@@ -161,79 +160,6 @@
             flex-wrap: wrap;
         }
 
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            body { padding: 5px; }
-            
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .controls {
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
-                padding: 15px;
-            }
-
-            .team-name-input {
-                width: 120px;
-                font-size: 14px;
-            }
-
-            .btn {
-                padding: 10px 12px;
-                font-size: 14px;
-                min-width: 45px;
-            }
-
-            .teams-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-                padding: 20px 15px;
-            }
-
-            .team-card {
-                padding: 25px 15px;
-            }
-
-            .score-display {
-                font-size: 3rem;
-            }
-
-            .team-name {
-                font-size: 1.4rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .score-display {
-                font-size: 2.5rem;
-            }
-
-            .team-name {
-                font-size: 1.2rem;
-            }
-
-            .btn {
-                padding: 8px 10px;
-                font-size: 13px;
-                min-width: 40px;
-            }
-        }
-
-        /* Animations */
-        @keyframes scorePop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        .score-pop {
-            animation: scorePop 0.3s ease-out;
-        }
-
-        /* Reset Button */
         .reset-btn {
             background: #6b7280;
             color: white;
@@ -248,6 +174,44 @@
         .reset-btn:hover {
             background: #4b5563;
             transform: translateY(-2px);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body { padding: 5px; }
+            .header h1 { font-size: 1.5rem; }
+            .controls {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+                padding: 15px;
+            }
+            .team-name-input { width: 120px; font-size: 14px; }
+            .btn { padding: 10px 12px; font-size: 14px; min-width: 45px; }
+            .teams-grid { 
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 20px 15px;
+            }
+            .team-card { padding: 25px 15px; }
+            .score-display { font-size: 3rem; }
+            .team-name { font-size: 1.4rem; }
+        }
+
+        @media (max-width: 480px) {
+            .score-display { font-size: 2.5rem; }
+            .team-name { font-size: 1.2rem; }
+            .btn { padding: 8px 10px; font-size: 13px; min-width: 40px; }
+        }
+
+        @keyframes scorePop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .score-pop {
+            animation: scorePop 0.3s ease-out;
         }
     </style>
 </head>
@@ -281,7 +245,7 @@
         </div>
 
         <div class="teams-grid">
-            <div class="team-card" id="team1Card">
+            <div class="team-card">
                 <div class="team-color" style="background: linear-gradient(90deg, #10b981, #059669);"></div>
                 <div class="team-name" id="team1DisplayName">Team A</div>
                 <div class="score-display" id="team1Score">0</div>
@@ -291,7 +255,7 @@
                 </div>
             </div>
 
-            <div class="team-card" id="team2Card">
+            <div class="team-card">
                 <div class="team-color" style="background: linear-gradient(90deg, #3b82f6, #1d4ed8);"></div>
                 <div class="team-name" id="team2DisplayName">Team B</div>
                 <div class="score-display" id="team2Score">0</div>
@@ -310,4 +274,42 @@
             document.getElementById('team1Score').textContent = scores.team1;
             document.getElementById('team2Score').textContent = scores.team2;
             
-           
+            const team1ScoreEl = document.getElementById('team1Score');
+            const team2ScoreEl = document.getElementById('team2Score');
+            
+            team1ScoreEl.classList.remove('score-negative', 'score-pop');
+            team2ScoreEl.classList.remove('score-negative', 'score-pop');
+            
+            if (scores.team1 < 0) team1ScoreEl.classList.add('score-negative');
+            if (scores.team2 < 0) team2ScoreEl.classList.add('score-negative');
+            
+            team1ScoreEl.classList.add('score-pop');
+            team2ScoreEl.classList.add('score-pop');
+        }
+
+        function changeScore(team, points) {
+            if (team === 1) {
+                scores.team1 += points;
+            } else {
+                scores.team2 += points;
+            }
+            updateDisplay();
+        }
+
+        function resetScores() {
+            scores = { team1: 0, team2: 0 };
+            updateDisplay();
+        }
+
+        document.getElementById('team1Name').addEventListener('input', function() {
+            document.getElementById('team1DisplayName').textContent = this.value || 'Team A';
+        });
+
+        document.getElementById('team2Name').addEventListener('input', function() {
+            document.getElementById('team2DisplayName').textContent = this.value || 'Team B';
+        });
+
+        updateDisplay();
+    </script>
+</body>
+</html>
