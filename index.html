@@ -202,10 +202,20 @@ function goTo(id){
 }
 
 /* SETUP */
+const MAX_TEAMS = 5;
+
 function addTeam(){
-  let i=document.createElement('input');
-  i.placeholder="Team name";
-  teamInputs.appendChild(i);
+  const container = document.getElementById("teamInputs");
+  const current = container.querySelectorAll("input").length;
+
+  if(current >= MAX_TEAMS){
+    alert("Maximum 5 teams only");
+    return;
+  }
+
+  let i = document.createElement("input");
+  i.placeholder = "Team " + (current + 1);
+  container.appendChild(i);
 }
 addTeam();addTeam();
 
