@@ -401,6 +401,15 @@ function undoScore(teamNum) {
         document.getElementById('team2Score').textContent = scores.team2;
     }
 }
+        function togglePause() {
+    if (isPaused) {
+        timerInterval = setInterval(updateTimer, 1000);
+        isPaused = false;
+    } else {
+        clearInterval(timerInterval);
+        isPaused = true;
+    }
+}
         function endMatch() {
             clearInterval(timerInterval);
             
