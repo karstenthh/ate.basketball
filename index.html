@@ -81,6 +81,10 @@
             transition: all 0.3s ease;
             margin: 5px;
         }
+        .undo-btn {
+    background: #888;
+}
+
 
         button:hover {
             transform: translateY(-2px);
@@ -380,7 +384,21 @@
                 document.getElementById('team2Score').textContent = scores.team2;
             }
         }
+        let scoreHistory = { team1: [], team2: [] };
+let isPaused = false;
+function undoScore(teamNum) {
+    if (teamNum === 1 && scoreHistory.team1.length > 0) {
+        const last = scoreHistory.team1.pop();
+        scores.team1 -= last;
+        document.getElementById('team1Score').textContent = scores.team1;
+    }
 
+    if (teamNum === 2 && scoreHistory.team2.length > 0) {
+        const last = scoreHistory.team2.pop();
+        scores.team2 -= last;
+        document.getElementById('team2Score').textContent = scores.team2;
+    }
+}
         function endMatch() {
             clearInterval(timerInterval);
             
