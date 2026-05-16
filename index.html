@@ -289,12 +289,26 @@ function resetScore(){
 /* TIMER */
 let time=600, interval;
 
-function startTimer(){
-  interval=setInterval(()=>{
-    if(time>0){time--; renderTime();}
-  },1000);
-}
+let endTime;
 
+function startTimer(){
+
+  endTime = Date.now() + time * 1000;
+
+  interval = setInterval(()=>{
+
+    time = Math.max(0,
+      Math.round((endTime - Date.now()) / 1000)
+    );
+
+    renderTime();
+
+    if(time <= 0){
+      pauseTimer();
+    }
+
+  },250);
+}
 function pauseTimer(){ clearInterval(interval); }
 
 function renderTime(){
